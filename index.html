@@ -81,7 +81,7 @@
             renderer.xr.enabled = true;
             document.body.appendChild(renderer.domElement);
 
-            document.body.appendChild(ARButton.createButton(renderer));
+            document.body.appendChild(THREE.ARButton.createButton(renderer));
 
             listener = new THREE.AudioListener();
             camera.add(listener);
