@@ -10,38 +10,37 @@
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs>
         <!-- Marcador Hiro -->
-        <a-marker preset="hiro">
+        <a-marker preset="hiro" id="hiroMarker">
             <a-box position="0 0.5 0" material="color: red;"></a-box>
-            <a-sound src="#sound1" autoplay="false" onmarkerfound="play('sound1')"></a-sound>
+            <a-sound id="hiroSound" src="url(./Metallica_Nothing_Else_Matters_Official_Music_Video.mp3)" autoplay="false"></a-sound>
         </a-marker>
 
         <!-- Marcador Kanji -->
-        <a-marker preset="kanji">
+        <a-marker preset="kanji" id="kanjiMarker">
             <a-sphere position="0 0.5 0" radius="0.5" material="color: blue;"></a-sphere>
-            <a-sound src="#sound2" autoplay="false" onmarkerfound="play('sound2')"></a-sound>
+            <a-sound id="kanjiSound" src="url(./Panteón_Rococó_-_El_Último_Ska.mp3)" autoplay="false"></a-sound>
         </a-marker>
 
         <a-entity camera></a-entity>
-
-        <!-- Definición de los audios -->
-        <audio id="sound1" src="./Metallica_ Nothing Else Matters (Official Music Video).mp3"></audio>
-        <audio id="sound2" src="./Panteón Rococó - El Último Ska.mp3"></audio>
     </a-scene>
+
     <script>
-        function play(sound) {
-            if (sound==null) {
-                sound.components.sound.pause();
-            } else if (sound == 'sound1') {
-                document.getElementById('sound2').components.sound.pause();
-                document.getElementById('sound1').components.sound.play();
-            } else if (sound == 'sound2') {
-                document.getElementById('sound1').components.sound.pause();
-                document.getElementById('sound2').components.sound.play();
-            }
+        document.querySelector('#hiroMarker').addEventListener('markerFound', function() {
+            document.querySelector('#hiroSound').components.sound.playSound();
+        });
 
-        }
+        document.querySelector('#hiroMarker').addEventListener('markerLost', function() {
+            document.querySelector('#hiroSound').components.sound.stopSound();
+        });
+
+        document.querySelector('#kanjiMarker').addEventListener('markerFound', function() {
+            document.querySelector('#kanjiSound').components.sound.playSound();
+        });
+
+        document.querySelector('#kanjiMarker').addEventListener('markerLost', function() {
+            document.querySelector('#kanjiSound').components.sound.stopSound();
+        });
     </script>
-
 </body>
 
 </html>
