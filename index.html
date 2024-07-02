@@ -9,37 +9,48 @@
 
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs>
+        <a-assets>
+            <audio id="sound1" src="./Metallica_ Nothing Else Matters (Official Music Video).mp3"></audio>
+            <audio id="sound2" src="./Panteón Rococó - El Último Ska.mp3"></audio>
+        </a-assets>
+
         <!-- Marcador Hiro -->
-        <a-marker preset="hiro" id="hiroMarker">
+        <a-marker preset="hiro">
             <a-box position="0 0.5 0" material="color: red;"></a-box>
-            <a-sound id="hiroSound" src="url(./Metallica_Nothing_Else_Matters_Official_Music_Video.mp3)" autoplay="false"></a-sound>
+            <a-entity sound="src: #sound1" autoplay="false" id="audio1"></a-entity>
         </a-marker>
 
         <!-- Marcador Kanji -->
-        <a-marker preset="kanji" id="kanjiMarker">
+        <a-marker preset="kanji">
             <a-sphere position="0 0.5 0" radius="0.5" material="color: blue;"></a-sphere>
-            <a-sound id="kanjiSound" src="url(./Panteón_Rococó_-_El_Último_Ska.mp3)" autoplay="false"></a-sound>
+            <a-entity sound="src: #sound2" autoplay="false" id="audio2"></a-entity>
         </a-marker>
 
         <a-entity camera></a-entity>
     </a-scene>
-
     <script>
-        document.querySelector('#hiroMarker').addEventListener('markerFound', function() {
-            document.querySelector('#hiroSound').components.sound.playSound();
+        AFRAME.registerComponent('soundhandler', {
+            init: function () {
+                this.el.addEventListener('markerFound', () => {
+                    this.playSound();
+                });
+                this.el.addEventListener('markerLost', () => {
+                    this.pauseSound();
+                });
+            },
+            playSound: function () {
+                let audio = document.querySelector(this.el.getAttribute('sound').src);
+                audio.play();
+            },
+            pauseSound: function () {
+                let audio = document.querySelector(this.el.getAttribute('sound').src);
+                audio.pause();
+                audio.currentTime = 0;
+            }
         });
 
-        document.querySelector('#hiroMarker').addEventListener('markerLost', function() {
-            document.querySelector('#hiroSound').components.sound.stopSound();
-        });
-
-        document.querySelector('#kanjiMarker').addEventListener('markerFound', function() {
-            document.querySelector('#kanjiSound').components.sound.playSound();
-        });
-
-        document.querySelector('#kanjiMarker').addEventListener('markerLost', function() {
-            document.querySelector('#kanjiSound').components.sound.stopSound();
-        });
+        document.querySelector('#audio1').setAttribute('soundhandler', '');
+        document.querySelector('#audio2').setAttribute('soundhandler', '');
     </script>
 </body>
 
