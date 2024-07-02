@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 
 <head>
@@ -34,82 +34,129 @@
     </script>
 </body>
 
-</html>
+</html> -->
 
-<!-- <!DOCTYPE html> -->
-<!-- <html>
+<!-- ///////////////////////////////////// -->
+
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>GeoAR.js demo</title>
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <meta charset="UTF-8">
+    <title>AR Museum with Three.js and WebXR</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/examples/js/libs/chevrotain.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/examples/jsm/webxr/ARButton.js"></script>
 </head>
 
 <body>
-    <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;">
-        <a-text value="This content will always face you." look-at="[gps-camera]" scale="120 120 120"
-            gps-entity-place="latitude: 21.877917454356215; longitude: 102.30347040902286;"></a-text>
-        <a-camera gps-camera rotation-reader> </a-camera>
-    </a-scene>
-</body> -->
+    <script>
+        let camera, scene, renderer;
+        let controller;
+        let audio1, audio2, listener;
 
+        init();
+        animate();
 
-<!-- <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.3.0/dist/aframe-master.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
-<style>
-  .arjs-loader {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+            renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.xr.enabled = true;
+            document.body.appendChild(renderer.domElement);
 
-  .arjs-loader div {
-    text-align: center;
-    font-size: 1.25em;
-    color: white;
-  }
-</style>
+            document.body.appendChild(ARButton.createButton(renderer));
 
-<body style="margin : 0px; overflow: hidden;">
-  <!-- minimal loader shown until image descriptors are loaded -->
-  <!-- <div class="arjs-loader">
-    <div>Loading, please wait...</div>
-  </div>
-  <a-scene
-    vr-mode-ui="enabled: false;"
-    renderer="logarithmicDepthBuffer: true; precision: medium;"
-    embedded
-    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
-  > -->
-    <!-- we use cors proxy to avoid cross-origin problems ATTENTION! you need to set up your server -->
-    <!-- <a-nft
-      type="nft"
-      url="./Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg"
-      smooth="true"
-      smoothCount="10"
-      smoothTolerance=".01"
-      smoothThreshold="5"
-    >
-      <a-entity
-        gltf-model="your-server/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
-        scale="5 5 5"
-        position="150 300 -100"
-      >
-      </a-entity>
-    </a-nft>
-    <a-entity camera></a-entity>
-  </a-scene>
+            listener = new THREE.AudioListener();
+            camera.add(listener);
+
+            // Load audios
+            const audioLoader = new THREE.AudioLoader();
+            audio1 = new THREE.PositionalAudio(listener);
+            audio2 = new THREE.PositionalAudio(listener);
+
+            audioLoader.load('./Metallica_ Nothing Else Matters (Official Music Video).mp3', function (buffer) {
+                audio1.setBuffer(buffer);
+                audio1.setRefDistance(20);
+            });
+
+            audioLoader.load('./Panteón Rococó - El Último Ska.mp3', function (buffer) {
+                audio2.setBuffer(buffer);
+                audio2.setRefDistance(20);
+            });
+
+            // Add AR markers
+            addMarker('hiro', audio1);
+            addMarker('kanji', audio2);
+
+            controller = renderer.xr.getController(0);
+            scene.add(controller);
+
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function addMarker(markerId, audio) {
+            const marker = new THREE.Group();
+            marker.name = markerId;
+
+            const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xff0000
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+
+            marker.add(mesh);
+            marker.add(audio);
+
+            scene.add(marker);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            renderer.setAnimationLoop(render);
+        }
+
+        function render() {
+            // Update marker visibility and audio playback
+            scene.children.forEach(child => {
+                if (child.name === 'hiro' || child.name === 'kanji') {
+                    if (isMarkerVisible(child)) {
+                        if (!child.children[1].isPlaying) child.children[1].play();
+                    } else {
+                        if (child.children[1].isPlaying) child.children[1].stop();
+                    }
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function isMarkerVisible(marker) {
+            // Logic to check if the marker is visible (placeholder, implement your own logic)
+            return true; // Replace with actual visibility logic
+        }
+    </script>
 </body>
 
-</html> --> 
+</html>
