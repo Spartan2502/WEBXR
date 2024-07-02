@@ -12,13 +12,13 @@
         <!-- Marcador Hiro -->
         <a-marker preset="hiro">
             <a-box position="0 0.5 0" material="color: red;"></a-box>
-            <a-sound src="#sound1" autoplay="false" onclick="this.components.sound.playSound()"></a-sound>
+            <a-sound src="#sound1" autoplay="false" onmarkerfound="play('sound1')"></a-sound>
         </a-marker>
 
         <!-- Marcador Kanji -->
         <a-marker preset="kanji">
             <a-sphere position="0 0.5 0" radius="0.5" material="color: blue;"></a-sphere>
-            <a-sound src="#sound2" autoplay="false" onclick="this.components.sound.playSound()"></a-sound>
+            <a-sound src="#sound2" autoplay="false" onmarkerfound="play('sound2')"></a-sound>
         </a-marker>
 
         <a-entity camera></a-entity>
@@ -27,7 +27,21 @@
         <audio id="sound1" src="./Metallica_ Nothing Else Matters (Official Music Video).mp3"></audio>
         <audio id="sound2" src="./Panteón Rococó - El Último Ska.mp3"></audio>
     </a-scene>
-</body>
+    <script>
+        function play(sound) {
+            if (sound==null) {
+                sound.components.sound.pause();
+            } else if (sound == 'sound1') {
+                document.getElementById('sound2').components.sound.pause();
+                document.getElementById('sound1').components.sound.play();
+            } else if (sound == 'sound2') {
+                document.getElementById('sound1').components.sound.pause();
+                document.getElementById('sound2').components.sound.play();
+            }
 
+        }
+    </script>
+
+</body>
 
 </html>
