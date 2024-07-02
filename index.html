@@ -12,21 +12,22 @@
         <!-- Marcador Hiro -->
         <a-marker preset="hiro">
             <a-box position="0 0.5 0" material="color: red;"></a-box>
-            <a-sound src="#sound1" autoplay="false" onmarkerfound="this.components.sound.playSound()"></a-sound>
+            <a-sound src="#sound1" autoplay="false" onclick="this.components.sound.playSound()"></a-sound>
         </a-marker>
 
         <!-- Marcador Kanji -->
         <a-marker preset="kanji">
             <a-sphere position="0 0.5 0" radius="0.5" material="color: blue;"></a-sphere>
-            <a-sound src="#sound2" autoplay="false" onmarkerfound="this.components.sound.playSound()"></a-sound>
+            <a-sound src="#sound2" autoplay="false" onclick="this.components.sound.playSound()"></a-sound>
         </a-marker>
 
         <a-entity camera></a-entity>
 
         <!-- Definición de los audios -->
-        <audio id="sound1" src="./Metallica_ Nothing Else Matters (Official Music Video).mp3" autoplay></audio>
-        <audio id="sound2" src="./Panteón Rococó - El Último Ska.mp3" autoplay></audio>
+        <audio id="sound1" src="./Metallica_ Nothing Else Matters (Official Music Video).mp3"></audio>
+        <audio id="sound2" src="./Panteón Rococó - El Último Ska.mp3"></audio>
     </a-scene>
 </body>
+
 
 </html>
